@@ -24,10 +24,12 @@ import jakarta.persistence.Table;
 import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotBlank;
 import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
 @Entity
+@Builder
 @Table(name = "users")
 @NoArgsConstructor  
 @AllArgsConstructor
@@ -64,8 +66,8 @@ public class UserEntity implements UserDetails {
     @Column(name = "phone_number", nullable = false, unique = true)
     private String phone_number;
 
-    @Column(name = "profile_picture_url")
-    private String profile_picture_url;
+    @Column(name = "profile_image_url")
+    private String profile_image_url;
 
     @Column(columnDefinition = "geometry(Point, 4326)", nullable = false)
     private Point location;
