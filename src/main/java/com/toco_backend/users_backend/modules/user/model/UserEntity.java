@@ -1,5 +1,6 @@
 package com.toco_backend.users_backend.modules.user.model;
 
+import java.security.Timestamp;
 import java.sql.Date;
 import java.util.Collection;
 import java.util.List;
@@ -78,6 +79,12 @@ public class UserEntity implements UserDetails {
 
     @Column(name = "rating")
     private float rating;
+
+    @Column(name = "created_at", nullable = false)
+    private Timestamp created_at;
+
+    @Column(name = "updated_at", nullable = false)
+    private Timestamp updated_at;
 
     // --- VERIFICACION DE IDENTIDAD ---
     @Column(name = "is_identity_verified", nullable = false)
