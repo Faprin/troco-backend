@@ -2,6 +2,7 @@ package com.toco_backend.users_backend.modules.user.model;
 
 import java.security.Timestamp;
 import java.sql.Date;
+import java.time.LocalDateTime;
 import java.util.Collection;
 import java.util.List;
 import java.util.Map;
@@ -10,8 +11,9 @@ import org.locationtech.jts.geom.Point;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
-
+import org.hibernate.annotations.CreationTimestamp;
 import org.hibernate.annotations.Type;
+import org.hibernate.annotations.UpdateTimestamp;
 
 import io.hypersistence.utils.hibernate.type.json.JsonType;
 import jakarta.persistence.Column;
@@ -80,11 +82,14 @@ public class UserEntity implements UserDetails {
     @Column(name = "rating")
     private float rating;
 
-    @Column(name = "created_at", nullable = false)
-    private Timestamp created_at;
+    // --- METADATOS ---
+    @CreationTimestamp
+    @Column(name = "created_at", nullable = false, updatable = false)
+    private LocalDateTime created_at;
 
+    @UpdateTimestamp
     @Column(name = "updated_at", nullable = false)
-    private Timestamp updated_at;
+    private LocalDateTime updated_at;
 
     // --- VERIFICACION DE IDENTIDAD ---
     @Column(name = "is_identity_verified", nullable = false)
