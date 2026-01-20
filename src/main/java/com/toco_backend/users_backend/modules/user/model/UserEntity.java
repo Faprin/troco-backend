@@ -1,7 +1,6 @@
 package com.toco_backend.users_backend.modules.user.model;
 
-import java.security.Timestamp;
-import java.sql.Date;
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.Collection;
 import java.util.List;
@@ -12,10 +11,9 @@ import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.hibernate.annotations.CreationTimestamp;
-import org.hibernate.annotations.Type;
 import org.hibernate.annotations.UpdateTimestamp;
-
-import io.hypersistence.utils.hibernate.type.json.JsonType;
+import org.hibernate.type.SqlTypes;
+import org.hibernate.annotations.JdbcTypeCode;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.EnumType;
@@ -58,24 +56,24 @@ public class UserEntity implements UserDetails {
 
     // --- INFORMACION PERSONAL ---
     @Column(name = "first_name", nullable = false)
-    private String first_name;
+    private String firstName;
 
     @Column(name = "last_name", nullable = false)
-    private String last_name;
+    private String lastName;
 
     @Column(name = "birthdate", nullable = false)
-    private Date birthdate;
+    private LocalDate birthdate;
     
     @Column(name = "phone_number", nullable = false, unique = true)
-    private String phone_number;
+    private String phoneNumber;
 
     @Column(name = "profile_image_url")
-    private String profile_image_url;
+    private String profileImageUrl;
 
     @Column(columnDefinition = "geometry(Point, 4326)", nullable = false)
     private Point location;
 
-    @Type(JsonType.class)
+    @JdbcTypeCode(SqlTypes.JSON)
     @Column(columnDefinition = "jsonb")
     private Map<String, Object> preferences;
 
@@ -85,25 +83,26 @@ public class UserEntity implements UserDetails {
     // --- METADATOS ---
     @CreationTimestamp
     @Column(name = "created_at", nullable = false, updatable = false)
-    private LocalDateTime created_at;
+    private LocalDateTime createdAt;
 
     @UpdateTimestamp
     @Column(name = "updated_at", nullable = false)
-    private LocalDateTime updated_at;
+    private LocalDateTime updatedAt;
 
     // --- VERIFICACION DE IDENTIDAD ---
     @Column(name = "is_identity_verified", nullable = false)
-    public Boolean is_identity_verified;
+    private Boolean isIdentityVerified;
 
+    @Enumerated(EnumType.STRING)
     @Column(name = "identity_status", nullable = false)
-    public IdentityStatus identity_status;
+    private IdentityStatus identityStatus;
 
     @Column(name = "rejection_reason")
-    public String rejection_reason;
+    private String rejectionReason;
 
     // --- UserDetails METHODS ---
     @Enumerated(EnumType.STRING)
-    public Role role;
+    private Role role;
     
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {

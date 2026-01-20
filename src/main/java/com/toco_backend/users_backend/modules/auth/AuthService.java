@@ -7,6 +7,7 @@ import org.springframework.security.authentication.UsernamePasswordAuthenticatio
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
+import com.toco_backend.users_backend.common.utils.GeometryUtil;
 import com.toco_backend.users_backend.modules.auth.payload.AuthResponse;
 import com.toco_backend.users_backend.modules.auth.payload.LoginRequest;
 import com.toco_backend.users_backend.modules.auth.payload.RegisterRequest;
@@ -27,26 +28,36 @@ public class AuthService {
     private final JwtService jwtService;
     private final AuthenticationManager authenticationManager;
 
-    public void Register(RegisterRequest request) {
-        // Lógica de registro de usuario (omitted for brevity)
-        UserEntity user = new UserEntity().builder()
+    public AuthResponse register(RegisterRequest request) {
+
+        if(userRepository.existsByUsername(request.getUsername())) {
+            throw new RuntimeException("Usuario existente");
+        }
+
+        // NO EXISTE: Construiri nuevo usuario
+        UserEntity user =  UserEntity.builder()
                 .username(request.getUsername())
                 .email(request.getEmail())
                 .password(passwordEncoder.encode(request.getPassword()))
-                .first_name(request.getFirst_name())
-                .last_name(request.getLast_name())
+                .firstName(request.getFirstName())
+                .lastName(request.getLastName())
                 .birthdate(request.getBirthdate())
-                .phone_number(request.getPhone_number())
-                .profile_image_url(request.getProfile_image_url())
+                .phoneNumber(request.getPhoneNumber())
+                .profileImageUrl(request.getProfileImageUrl())
                 .preferences(new HashMap<>())
                 .rating((float) 0.0)
-                .is_identity_verified(false)
-                .identity_status(IdentityStatus.UNVERIFIED)
-                .rejection_reason("")
+                .isIdentityVerified(false)
+                .identityStatus(IdentityStatus.UNVERIFIED)
+                .rejectionReason("")
                 .role(Role.USER)
+                .location(GeometryUtil.createPoint(request.getLatitude(), request.getLongitude()))
                 .build();
 
         userRepository.save(user);
+
+        return AuthResponse.builder()
+                .token(jwtService.generateToken(user))
+                .build();
 }
 
     public AuthResponse login(LoginRequest request) {

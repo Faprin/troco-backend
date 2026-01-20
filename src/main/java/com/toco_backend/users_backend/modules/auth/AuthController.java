@@ -6,13 +6,14 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.toco_backend.users_backend.modules.auth.payload.AuthResponse;
 import com.toco_backend.users_backend.modules.auth.payload.LoginRequest;
 import com.toco_backend.users_backend.modules.auth.payload.RegisterRequest;
 
 import lombok.RequiredArgsConstructor;
 
 @RestController
-@RequestMapping("/auth")
+@RequestMapping("/api/auth")
 @RequiredArgsConstructor
 public class AuthController {
 
@@ -24,8 +25,8 @@ public class AuthController {
     }
 
     @PostMapping("/register")
-    public ResponseEntity<String> register(@RequestBody RegisterRequest registerRequest) {
-        authService.Register(registerRequest);
-        return ResponseEntity.ok("User registered successfully");
+    public ResponseEntity<AuthResponse> register(@RequestBody RegisterRequest registerRequest) {
+        AuthResponse response = authService.register(registerRequest);
+        return ResponseEntity.ok(response);
     }
 }
