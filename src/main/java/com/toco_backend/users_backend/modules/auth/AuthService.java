@@ -44,7 +44,7 @@ public class AuthService {
                 .birthdate(request.getBirthdate())
                 .phoneNumber(request.getPhoneNumber())
                 .profileImageUrl(request.getProfileImageUrl())
-                .preferences(new HashMap<>())
+                .preferences(new HashMap<>()) // TODO: Podría tomarse en la página de inicio
                 .rating((float) 0.0)
                 .isIdentityVerified(false)
                 .identityStatus(IdentityStatus.UNVERIFIED)
@@ -56,6 +56,7 @@ public class AuthService {
         userRepository.save(user);
 
         return AuthResponse.builder()
+                .username(user.getUsername())
                 .token(jwtService.generateToken(user))
                 .build();
 }
@@ -70,13 +71,14 @@ public class AuthService {
 
         // Si pasa la autenticación, buscamos al usuario para generar el token
         // Usamos el mismo input para buscar en ambos campos
-        var user = userRepository.findByEmailOrUsername(request.getUsername(), request.getUsername())
+        UserEntity user = userRepository.findByEmailOrUsername(request.getUsername(), request.getUsername())
                 .orElseThrow(() -> new RuntimeException("Usuario no encontrado (Error inesperado tras auth)"));
 
         // 3. Generar Token
         var jwtToken = jwtService.generateToken(user);
 
         return AuthResponse.builder()
+                .username(user.getUsername())
                 .token(jwtToken)
                 .build();
     }
