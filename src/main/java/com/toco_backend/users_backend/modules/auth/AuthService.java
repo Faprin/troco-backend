@@ -51,6 +51,8 @@ public class AuthService {
                 .rejectionReason("")
                 .role(Role.USER)
                 .location(GeometryUtil.createPoint(request.getLatitude(), request.getLongitude()))
+                .isActive(true)
+                .deletionRequestedAt(null) // mientras sea null, la cuenta no se eliminará nunca
                 .build();
 
         userRepository.save(user);

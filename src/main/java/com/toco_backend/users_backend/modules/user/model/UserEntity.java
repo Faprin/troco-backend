@@ -24,6 +24,7 @@ import jakarta.persistence.Id;
 import jakarta.persistence.Table;
 import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.NotNull;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -89,6 +90,14 @@ public class UserEntity implements UserDetails {
     @Column(name = "updated_at", nullable = false)
     private LocalDateTime updatedAt;
 
+    // --- RGPD ELIMINACIÓN DE LA CUENTA DESPUÉS DE UN PERIODO DE GRACIA --- 
+    @NotNull
+    @Column(name = "is_active", nullable = false)
+    private Boolean isActive;
+
+    @Column(name = "deletion_requested_at")
+    private LocalDateTime deletionRequestedAt;
+
     // --- VERIFICACION DE IDENTIDAD ---
     @Column(name = "is_identity_verified", nullable = false)
     private Boolean isIdentityVerified;
@@ -106,7 +115,7 @@ public class UserEntity implements UserDetails {
     
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {
-        return List.of(new SimpleGrantedAuthority(role.name()));
+        return List.of(new SimpleGrantedAuthority("ROLE_" + role.name()));
     }
 
     @Override

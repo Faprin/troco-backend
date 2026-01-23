@@ -22,11 +22,11 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.NoArgsConstructor;
 
-@Entity
-@Builder
-@Table(name = "transaction")
-@NoArgsConstructor
-@AllArgsConstructor
+// @Entity
+// @Builder
+// @Table(name = "transaction")
+// @NoArgsConstructor
+// @AllArgsConstructor
 public class TransactionEntity {
     
     @Id
