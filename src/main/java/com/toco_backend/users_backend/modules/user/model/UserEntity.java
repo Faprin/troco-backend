@@ -78,8 +78,13 @@ public class UserEntity implements UserDetails {
     @Column(columnDefinition = "jsonb")
     private Map<String, Object> preferences;
 
+    // PUNTUCIÓN
+
     @Column(name = "rating")
-    private float rating;
+    private Float rating;
+
+    @Column(name = "rating_count")
+    private Integer ratingCount;
 
     // --- METADATOS ---
     @CreationTimestamp

@@ -3,10 +3,13 @@ package com.toco_backend.users_backend.modules.user;
 import java.time.LocalDateTime;
 import java.util.HashMap;
 
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import com.toco_backend.users_backend.common.utils.GeometryUtil;
 import com.toco_backend.users_backend.modules.user.model.UserEntity;
+import com.toco_backend.users_backend.modules.user.payload.ChangePasswordRequest;
+import com.toco_backend.users_backend.modules.user.payload.PublicUserProfile;
 import com.toco_backend.users_backend.modules.user.payload.UpdateUserRequestAndResponse;
 import com.toco_backend.users_backend.modules.user.payload.UserDeleteResponse;
 import com.toco_backend.users_backend.modules.user.payload.UserProfileResponse;
@@ -18,6 +21,7 @@ import lombok.RequiredArgsConstructor;
 public class UserService {
 
     private final UserRepository repository;
+    private final PasswordEncoder passwordEncoder;
 
     /**
      * Método encargado de devolver toda la información relativa del usuario para
@@ -110,6 +114,11 @@ public class UserService {
             .build();
     }
 
+    /**
+     * Metodo que anula la decision del usuario de eliminar su cuenta de la base de datos
+     * @param username usuario que decide revertir la operacion de eliminar
+     * @return
+     */
     public String cancelDeletion(String username) {
         UserEntity user = getSafeUserByUsername(username);
 
@@ -119,6 +128,43 @@ public class UserService {
 
         return user.getUsername();
     }
+
+    /**
+     * Cambia y encripta una nueva contraseña que introduce el usuario
+     * @param username usuario que cambia la contraseña
+     * @param changePasswordRequest clase que trae consigo las contraseñas antiguas y nuevas
+     */
+    public void updatePassword(String username, ChangePasswordRequest changePasswordRequest) {
+        
+        UserEntity user = getSafeUserByUsername(username);
+
+        if(!passwordEncoder.matches(changePasswordRequest.getOldPassword(), user.getPassword()))
+            throw new RuntimeException("La contraseña actual es incorrecta");
+    
+        user.setPassword(passwordEncoder.encode(changePasswordRequest.getNewPassword()));
+        repository.save(user);
+    }
+
+    /**
+     * Get concreto a un usuario para mostrarle al resto de los clientes de la aplicación la información acerca
+     * de un perfil público dado de alta en la misma 
+     * @param username usuario del que se solicita información
+     * @return objeto que conjunta toda la ifnromación pública
+     */
+    public PublicUserProfile getPublicUserProfile(String username) {
+        
+        UserEntity user = getSafeUserByUsername(username);
+
+        return PublicUserProfile.builder()
+            .username(username)
+            .firstName(user.getFirstName())
+            .lastName(user.getLastName())
+            .rating(user.getRating())
+            .isIdentityVerified(user.getIsIdentityVerified())
+            .profileImageUrl(user.getProfileImageUrl())
+            .build();
+    }
+
 
     /**
      * Normalizacion de los datos para un UserRequestAndResponse

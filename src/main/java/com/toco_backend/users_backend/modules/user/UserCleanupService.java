@@ -49,7 +49,8 @@ public class UserCleanupService {
         user.setIsIdentityVerified(false);
         user.setIdentityStatus(IdentityStatus.UNVERIFIED);
         user.setRejectionReason("");
-        user.setRating(0);
+        user.setRating(0.0f);
+        user.setRatingCount(0);
         repository.save(user);
     }
 }

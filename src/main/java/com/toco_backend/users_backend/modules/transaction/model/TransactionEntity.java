@@ -3,6 +3,7 @@ package com.toco_backend.users_backend.modules.transaction.model;
 import java.time.LocalDateTime;
 
 import org.hibernate.annotations.CreationTimestamp;
+import org.hibernate.annotations.UpdateTimestamp;
 
 import com.toco_backend.users_backend.modules.user.model.UserEntity;
 
@@ -22,11 +23,11 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.NoArgsConstructor;
 
-// @Entity
-// @Builder
-// @Table(name = "transaction")
-// @NoArgsConstructor
-// @AllArgsConstructor
+@Entity
+@Builder
+@Table(name = "transaction")
+@NoArgsConstructor
+@AllArgsConstructor
 public class TransactionEntity {
     
     @Id
@@ -60,4 +61,11 @@ public class TransactionEntity {
     @Column(name = "created_at", nullable = false, updatable = false)
     private LocalDateTime createdAt;
  
+    @UpdateTimestamp
+    @Column(name = "lasta_modified", nullable = false)
+    private LocalDateTime updateAt;
+
+    public Long getId() {
+        return this.id;
+    }
 }

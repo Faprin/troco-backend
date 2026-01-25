@@ -45,7 +45,8 @@ public class AuthService {
                 .phoneNumber(request.getPhoneNumber())
                 .profileImageUrl(request.getProfileImageUrl())
                 .preferences(new HashMap<>()) // TODO: Podría tomarse en la página de inicio
-                .rating((float) 0.0)
+                .rating(0.0f)
+                .ratingCount(0)
                 .isIdentityVerified(false)
                 .identityStatus(IdentityStatus.UNVERIFIED)
                 .rejectionReason("")
