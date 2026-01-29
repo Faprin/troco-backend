@@ -78,7 +78,7 @@ public class UserEntity implements UserDetails {
     @Column(columnDefinition = "jsonb")
     private Map<String, Object> preferences;
 
-    // PUNTUCIÓN
+    // --- PUNTUCIÓN --- 
 
     @Column(name = "rating")
     private Float rating;
