@@ -10,12 +10,12 @@ import com.toco_backend.users_backend.modules.user.model.UserEntity;
 
 import lombok.RequiredArgsConstructor;
 
-@Service
-@RequiredArgsConstructor
+// @Service
+// @RequiredArgsConstructor
 public class TransactionService {
 
-    private final TransactionRepository transactionRepository;
-    private final UserRepository userRepository;
+    // private final TransactionRepository transactionRepository;
+    // private final UserRepository userRepository;
     // private final ItemRepository itemRepository;
 
     /**
@@ -57,8 +57,8 @@ public class TransactionService {
      * @param username Nombre de usuario a buscar
      * @return Usuario en caso de que haya sido encontrado
      */
-    public UserEntity getSafeUserByUsername(String username) {
+    /*public UserEntity getSafeUserByUsername(String username) {
         return userRepository.findByUsername(username)
             .orElseThrow(() -> new RuntimeException("Usuario no encontrado"));
-    }
+    }*/
 }

@@ -23,13 +23,13 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.NoArgsConstructor;
 
-@Entity
-@Builder
-@Table(name = "transaction")
-@NoArgsConstructor
-@AllArgsConstructor
+// @Entity
+// @Builder
+// @Table(name = "transaction")
+// @NoArgsConstructor
+// @AllArgsConstructor
 public class TransactionEntity {
-    
+    /*
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
@@ -67,5 +67,5 @@ public class TransactionEntity {
 
     public Long getId() {
         return this.id;
-    }
+    }*/
 }

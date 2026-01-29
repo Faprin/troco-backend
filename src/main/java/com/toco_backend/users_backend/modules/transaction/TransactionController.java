@@ -13,15 +13,15 @@ import com.toco_backend.users_backend.modules.transaction.payload.CreateTransact
 
 import lombok.RequiredArgsConstructor;
 
-@Controller
-@RequestMapping("/api/transactions")
-@RequiredArgsConstructor
+// @Controller
+// @RequestMapping("/api/transactions")
+// @RequiredArgsConstructor
 public class TransactionController {
 
-    private final TransactionService service;
+    /*private final TransactionService service;
 
     @PostMapping()
     public ResponseEntity<?> createTransaction(Principal currentUser, @RequestBody CreateTransactionRequest request) {
         return ResponseEntity.ok(Collections.singletonMap("transaction_id", service.createTransaction(currentUser.getName(), request)));
-    } 
+    } */
 }
