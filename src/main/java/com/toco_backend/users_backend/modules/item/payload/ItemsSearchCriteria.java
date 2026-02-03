@@ -1,4 +1,4 @@
-package com.toco_backend.users_backend.modules.item.model;
+package com.toco_backend.users_backend.modules.item.payload;
 
 import lombok.Data;
 @Data
