@@ -23,13 +23,13 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.NoArgsConstructor;
 
-// @Entity
-// @Builder
-// @Table(name = "transaction")
-// @NoArgsConstructor
-// @AllArgsConstructor
+@Entity
+@Builder
+@Table(name = "transaction")
+@NoArgsConstructor
+@AllArgsConstructor
 public class TransactionEntity {
-    /*
+    
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
@@ -43,7 +43,7 @@ public class TransactionEntity {
     @NotNull
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "reciver_id")
-    private Long reciverId;
+    private UserEntity reciver;
     
     // --- NOTA DE APERTURA --- 
     @NotNull
@@ -64,8 +64,4 @@ public class TransactionEntity {
     @UpdateTimestamp
     @Column(name = "lasta_modified", nullable = false)
     private LocalDateTime updateAt;
-
-    public Long getId() {
-        return this.id;
-    }*/
 }
