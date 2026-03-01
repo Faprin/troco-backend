@@ -1,5 +1,11 @@
 package com.toco_backend.users_backend.modules.transaction;
 
+import com.toco_backend.users_backend.modules.item.ItemRepository;
+import com.toco_backend.users_backend.modules.item.model.ItemEntity;
+import com.toco_backend.users_backend.modules.transaction.model.TransactionEntity;
+import com.toco_backend.users_backend.modules.transaction.payload.CreateTransactionRequest;
+import com.toco_backend.users_backend.modules.user.UserRepository;
+import com.toco_backend.users_backend.modules.user.model.UserEntity;
 import lombok.RequiredArgsConstructor;
 
 import org.springframework.stereotype.Service;
@@ -13,15 +19,11 @@ public class TransactionService {
     private final ItemRepository itemRepository;
 
     // TODO terminar el metodo
-    public TransactionEntity createTransaction(CreateTransactionRequest request){
+    public void createTransaction(CreateTransactionRequest request){
         // debo de encontrar al otro usuario y el item en la bd
-        ItemEntity item = itemRepository.findById(request.getItemId()).orElseThrow(() -> new RuntimeException("Item no encontrado"));
-        UserEntity user = userRepository.findById(request.getUserId()).orElseThrow(() -> new RuntimeException("Usuario no encontrado"));
+        ItemEntity item = itemRepository.findById(request.getTargetId()).orElseThrow(() -> new RuntimeException("Item no encontrado"));
+        UserEntity user = userRepository.findById(item.getOwner().getId()).orElseThrow(() -> new RuntimeException("Usuario no encontrado"));
 
-        TransactionEntity transaction = TransactionEntity.builder()
-            .item(item)
-            .user(user)
-            .build();
         
     }
 }
