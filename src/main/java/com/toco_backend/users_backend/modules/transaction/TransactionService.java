@@ -2,6 +2,7 @@ package com.toco_backend.users_backend.modules.transaction;
 
 import com.toco_backend.users_backend.modules.item.ItemRepository;
 import com.toco_backend.users_backend.modules.item.model.ItemEntity;
+import com.toco_backend.users_backend.modules.item.payload.CreateTransactionResponse;
 import com.toco_backend.users_backend.modules.transaction.model.TransactionEntity;
 import com.toco_backend.users_backend.modules.transaction.payload.CreateTransactionRequest;
 import com.toco_backend.users_backend.modules.user.UserRepository;
@@ -19,11 +20,11 @@ public class TransactionService {
     private final ItemRepository itemRepository;
 
     // TODO terminar el metodo
-    public void createTransaction(CreateTransactionRequest request){
+    public CreateTransactionResponse createTransaction(CreateTransactionRequest request){
         // debo de encontrar al otro usuario y el item en la bd
         ItemEntity item = itemRepository.findById(request.getTargetId()).orElseThrow(() -> new RuntimeException("Item no encontrado"));
         UserEntity user = userRepository.findById(item.getOwner().getId()).orElseThrow(() -> new RuntimeException("Usuario no encontrado"));
 
-        
+        return CreateTransactionResponse.builder().build();
     }
 }
