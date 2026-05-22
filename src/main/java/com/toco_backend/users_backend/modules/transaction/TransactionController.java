@@ -18,7 +18,7 @@ public class TransactionController {
     private final TransactionService transactionService;
 
     @PostMapping
-    public ResponseEntity<?> createTransaction(@RequestBody CreateTransactionRequest request){
-        return ResponseEntity.ok(transactionService.createTransaction(request));
+    public ResponseEntity<?> createTransaction(@RequestBody CreateTransactionRequest request, java.security.Principal user){
+        return ResponseEntity.ok(transactionService.createTransaction(request, user.getName()));
     }
 }

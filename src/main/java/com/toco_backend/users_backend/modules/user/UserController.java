@@ -26,8 +26,6 @@ import org.springframework.web.bind.annotation.RequestBody;
 @RequiredArgsConstructor
 public class UserController {
 
-
-    // TODO EL CONTROLLER COMPLETO
     private final UserService service;
 
     @GetMapping("/profile")
@@ -98,6 +96,10 @@ public class UserController {
         return ResponseEntity.ok((service.getPublicUserProfile(username)));
     } 
     
-    
-    // POST /verify-identity
+    @PostMapping("/verify-identity")
+    public ResponseEntity<?> verifyIdentity(Principal user) {
+        // Mock implementation for identity verification
+        String usernameLog = user.getName();
+        return ResponseEntity.ok(Collections.singletonMap("message", "Identidad verificada exitosamente (MOCK) para " + usernameLog));
+    }
 }

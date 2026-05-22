@@ -21,10 +21,12 @@ import jakarta.persistence.Table;
 import jakarta.validation.constraints.NotNull;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
+import lombok.Data;
 import lombok.NoArgsConstructor;
 
 @Entity
 @Builder
+@Data
 @Table(name = "transaction")
 @NoArgsConstructor
 @AllArgsConstructor
@@ -54,6 +56,18 @@ public class TransactionEntity {
     @Enumerated(EnumType.STRING)
     @Column(name = "status", nullable = false)
     private TransactionStatus status;
+    
+    // --- ÍTEMS IMPLICADOS ---
+    @NotNull
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "target_item_id")
+    private com.toco_backend.users_backend.modules.item.model.ItemEntity targetItem;
+
+    @ManyToMany(fetch = FetchType.LAZY)
+    @JoinTable(name = "transaction_offered_items",
+            joinColumns = @JoinColumn(name = "transaction_id"),
+            inverseJoinColumns = @JoinColumn(name = "item_id"))
+    private java.util.List<com.toco_backend.users_backend.modules.item.model.ItemEntity> offeredItems;
     
 
     // --- METADATOS ---

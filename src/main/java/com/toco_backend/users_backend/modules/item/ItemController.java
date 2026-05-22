@@ -44,9 +44,9 @@ public class ItemController {
     }
 
     @GetMapping("/{id}")
-    public ResponseEntity<ItemDetailResponse> getItemDetail(@PathVariable Long id) {
+    public ResponseEntity<ItemDetailResponse> getItemDetail(@PathVariable Long id, Principal currentUser) {
 
-        return ResponseEntity.ok(itemService.getItemDetail(id));
+        return ResponseEntity.ok(itemService.getItemDetail(id, currentUser.getName()));
     }
 
     @GetMapping("/user/{ownerUsername}")
@@ -78,5 +78,10 @@ public class ItemController {
                 
         return ResponseEntity.ok(
                 itemService.changeItemStatus(id, request.getStatus(), currentUser.getName()));
+    }
+
+    @PostMapping("/{id}/like")
+    public ResponseEntity<ItemDetailResponse> toggleLike(@PathVariable Long id, Principal currentUser) {
+        return ResponseEntity.ok(itemService.toggleLikeItem(id, currentUser.getName()));
     }
 }

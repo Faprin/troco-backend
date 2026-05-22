@@ -19,12 +19,46 @@ public class TransactionService {
     private final UserRepository userRepository;
     private final ItemRepository itemRepository;
 
-    // TODO terminar el metodo
-    public CreateTransactionResponse createTransaction(CreateTransactionRequest request){
-        // debo de encontrar al otro usuario y el item en la bd
-        ItemEntity item = itemRepository.findById(request.getTargetId()).orElseThrow(() -> new RuntimeException("Item no encontrado"));
-        UserEntity user = userRepository.findById(item.getOwner().getId()).orElseThrow(() -> new RuntimeException("Usuario no encontrado"));
+    public CreateTransactionResponse createTransaction(CreateTransactionRequest request, String requesterUsername){
+        UserEntity requesterUser = userRepository.findByUsername(requesterUsername)
+                .orElseThrow(() -> new RuntimeException("Usuario solicitante no encontrado"));
 
-        return CreateTransactionResponse.builder().build();
+        ItemEntity targetItem = itemRepository.findById(request.getTargetId())
+                .orElseThrow(() -> new RuntimeException("Ítem objetivo no encontrado"));
+                
+        if (targetItem.getOwner().getUsername().equals(requesterUsername)) {
+            throw new RuntimeException("No puedes hacer una transacción por tu propio ítem");
+        }
+
+        UserEntity receiverUser = targetItem.getOwner();
+
+        java.util.List<ItemEntity> offeredItems = itemRepository.findAllById(request.getOfferedItems());
+        if (offeredItems.size() != request.getOfferedItems().size()) {
+            throw new RuntimeException("Algunos de los ítems ofrecidos no existen");
+        }
+        
+        for (ItemEntity offeredItem : offeredItems) {
+            if (!offeredItem.getOwner().getUsername().equals(requesterUsername)) {
+                throw new RuntimeException("No puedes ofrecer un ítem que no te pertenece");
+            }
+        }
+
+        TransactionEntity transaction = TransactionEntity.builder()
+                .requester(requesterUser)
+                .reciver(receiverUser)
+                .proposalNote(request.getProposalNote())
+                .status(com.toco_backend.users_backend.modules.transaction.model.TransactionStatus.PENDING)
+                .targetItem(targetItem)
+                .offeredItems(offeredItems)
+                .build();
+
+        transactionRepository.save(transaction);
+
+        return CreateTransactionResponse.builder()
+                .proposalNote(transaction.getProposalNote())
+                .owner(receiverUser)
+                .requester(requesterUser)
+                .status(transaction.getStatus())
+                .build();
     }
 }

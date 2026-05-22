@@ -29,6 +29,7 @@ public class ItemService {
 
     private final ItemRepository itemRepository;
     private final UserRepository userRepository;
+    private final com.toco_backend.users_backend.modules.like.LikeRepository likeRepository;
 
     /**
      * Lista todos los items para el feed del usuario según los criterios del mismo
@@ -46,7 +47,7 @@ public class ItemService {
         Page<ItemEntity> itemsPage = itemRepository.searchNearby(userLocation, radioMetros, criteria.getCategory(),
                 criteria.getKeyword(), pageable);
 
-        return itemsPage.map(item -> mapToItemResponse(item, userLocation));
+        return itemsPage.map(item -> mapToItemResponse(item, userLocation, currentUserUsername));
     }
 
     /**
@@ -55,10 +56,16 @@ public class ItemService {
      * @param id identificador del item que se quiere saber el detalle
      * @return Respuesta normalizada sobreel item
      */
-    public ItemDetailResponse getItemDetail(Long id) {
+    public ItemDetailResponse getItemDetail(Long id, String requesterUsername) {
 
         ItemEntity item = itemRepository.findById(id)
                 .orElseThrow(() -> new RuntimeException("Item no encontrado"));
+
+        UserEntity user = userRepository.findByUsername(requesterUsername).orElse(null);
+        boolean isLiked = false;
+        if (user != null) {
+            isLiked = likeRepository.existsByUserAndItem(user, item);
+        }
 
         return ItemDetailResponse.builder()
                 .id(id)
@@ -67,7 +74,7 @@ public class ItemService {
                 .ownerUsername(item.getOwner().getUsername())
                 .likes(item.getLikes())
                 .status(item.getStatus().toString())
-                .isLikeByMe(false) // TODO cambiar cuando se meta el likeRepository
+                .isLikeByMe(isLiked)
                 .build();
     }
 
@@ -96,7 +103,7 @@ public class ItemService {
         }
 
         return items.stream()
-                .map(item -> mapToItemResponse(item, null)).toList();
+                .map(item -> mapToItemResponse(item, null, requesterUsername)).toList();
 
     }
 
@@ -125,7 +132,7 @@ public class ItemService {
 
         itemRepository.save(item);
 
-        return mapToItemResponse(item, user.getLocation());
+        return mapToItemResponse(item, user.getLocation(), username);
     }
 
     @Transactional
@@ -175,7 +182,7 @@ public class ItemService {
         // 6. Devolver respuesta
         // Pasamos null en userLocation porque al editar no necesitamos recalcular la
         // distancia
-        return mapToItemResponse(savedItem, null);
+        return mapToItemResponse(savedItem, null, requesterUsername);
     }
 
     /**
@@ -234,7 +241,7 @@ public class ItemService {
 
         ItemEntity savedItem = itemRepository.save(item);
 
-        return mapToItemResponse(savedItem, null);
+        return mapToItemResponse(savedItem, null, username);
     }
 
     /* ################ MÉTODOS AUXILIARES ################ */
@@ -245,11 +252,7 @@ public class ItemService {
      * @param userLocation
      * @return
      */
-    public ItemResponse mapToItemResponse(ItemEntity item, Point userLocation) {
-
-        // UserEntity currentUser = userRepository.findByUsername(currentUserUsername)
-        // .orElseThrow(() -> new RuntimeException("El usuario desde el que se ejecuta
-        // este GET no ha sido encontraod"));
+    public ItemResponse mapToItemResponse(ItemEntity item, Point userLocation, String currentUserUsername) {
 
         Double distance = calculateHaversineDistance(userLocation, item.getOwner().getLocation());
 
@@ -265,7 +268,13 @@ public class ItemService {
             }
         }
 
-        /// TODO ISLIKE BY ME HACERLO CUANDO SE TENGA EL LIKEREPOSITORY HECHO
+        boolean isLiked = false;
+        if (currentUserUsername != null) {
+            UserEntity currentUser = userRepository.findByUsername(currentUserUsername).orElse(null);
+            if (currentUser != null) {
+                isLiked = likeRepository.existsByUserAndItem(currentUser, item);
+            }
+        }
 
         return ItemResponse.builder()
                 .title(item.getTitle())
@@ -273,10 +282,37 @@ public class ItemService {
                 .ownerUsername(item.getOwner().getUsername())
                 .distanceKm(distance != null ? Math.round(distance * 10.0) / 10.0 : null)
                 .likes(item.getLikes())
-                .isLikeByMe(false)
+                .isLikeByMe(isLiked)
                 .status(item.getStatus())
                 .build();
 
+    }
+
+    @Transactional
+    public ItemDetailResponse toggleLikeItem(Long itemId, String username) {
+        UserEntity user = userRepository.findByUsername(username)
+                .orElseThrow(() -> new RuntimeException("Usuario no encontrado"));
+                
+        ItemEntity item = itemRepository.findById(itemId)
+                .orElseThrow(() -> new RuntimeException("Item no encontrado"));
+                
+        java.util.Optional<com.toco_backend.users_backend.modules.like.model.LikeEntity> existingLike = likeRepository.findByUserAndItem(user, item);
+        
+        if (existingLike.isPresent()) {
+            likeRepository.delete(existingLike.get());
+            item.setLikes(item.getLikes() - 1);
+        } else {
+            com.toco_backend.users_backend.modules.like.model.LikeEntity newLike = com.toco_backend.users_backend.modules.like.model.LikeEntity.builder()
+                    .user(user)
+                    .item(item)
+                    .build();
+            likeRepository.save(newLike);
+            item.setLikes(item.getLikes() + 1);
+        }
+        
+        itemRepository.save(item);
+        
+        return getItemDetail(item.getId(), username);
     }
 
     /**
